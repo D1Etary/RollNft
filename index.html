@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Gift — Premium Case Opening</title>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+    <style>
+        /* Исправленные стили для Telegram Mini App */
+        body {
+            background: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .tg-back-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #2481cc;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .app {
+            padding: 16px;
+            min-height: calc(100vh - 120px);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #2d2d2d;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s;
+            color: #888;
+        }
+        
+        .nav-item.active {
+            background: #2481cc;
+            color: #ffffff;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        /* Адаптация компонентов под темную тему */
+        .profile-row, .upgrade-content, .leaderboard-header, 
+        .profile-header, .history-header {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #3d3d3d;
+        }
+        
+        .case-fullscreen {
+            background: #1a1a1a;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1001;
+            overflow-y: auto;
+        }
+        
+        button {
+            background: #2481cc;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #1a6fb3;
+        }
+        
+        .star-pill {
+            background: linear-gradient(45deg, #ffd700, #ff6b00);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .ribbon {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        
+        .emoji-pill {
+            background: #3d3d3d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        /* Анимации */
+        .case-opening-animation, .prize-reveal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1a1a1a;
+            z-index: 1002;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .avatar, .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #2481cc;
+        }
+        
+        .username {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .user-level {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .sort {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #3d3d3d;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка назад для Telegram -->
+    <button class="tg-back-button" id="tg-back-button" style="display: none;">←</button>
+
+    <!-- Главная страница -->
+    <div class="app" id="page-main">
+        <div class="profile-row">
+            <img id="avatar" class="avatar" src="assets/images/avatar.jpg" alt="avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyNDgxY2MiLz4KPHBhdGggZD0iTTIwIDIyQzIyLjIwOTEgMjIgMjQgMjAuMjA5MSAyNCAxOEMyNCAxNS43OTA5IDIyLjIwOTEgMTQgMjAgMTRDMTcuNzkwOSAxNCAxNiAxNS43OTA5IDE2IDE4QzE2IDIwLjIwOTEgMTcuNzkwOSAyMiAyMCAyMloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNiAyNkMyNiAyOC4yMDkxIDIzLjMxMzcgMzAgMjAgMzBDMTYuNjg2MyAzMCAxNCAyOC4yMDkxIDE0IDI2QzE0IDIzLjc5MDkgMTYuNjg2MyAyMiAyMCAyMkMyMy4zMTM3IDIyIDI2IDIzLjc5MDkgMjYgMjZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K'">
+            <div class="profile-info">
+                <div class="username" id="username">Загрузка...</div>
+                <div class="user-level">Уровень 1 • Новичок</div>
+            </div>
+            <div class="stars-badge">
+                <div class="star-pill">
+                    <span class="star">★</span> 
+                    <strong id="topstars">0</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="ribbon">
+            <div class="emoji-pill">💖</div>
+            <div class="emoji-pill">🎁</div>
+            <div class="emoji-pill">🔥</div>
+            <div class="emoji-pill">⚡</div>
+            <div class="emoji-pill">🌟</div>
+            <div class="emoji-pill">💎</div>
+        </div>
+
+        <div class="sort">
+            Сортировка
+            <div style="color:#2481cc;font-weight:800;">Премиум</div>
+        </div>
+
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- Премиум страница -->
+    <div class="app" id="page-upgrade" style="display:none;">
+        <div class="upgrade-content">
+            <div class="upgrade-icon">🚀</div>
+            <div class="upgrade-title">PREMIUM ACCESS</div>
+            <div class="upgrade-subtitle">Открой все возможности и получи эксклюзивные привилегии</div>
+            
+            <div class="upgrade-features">
+                <div class="upgrade-feature">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-text">+50% бонус к звездам</div>
+                </div>
+                <div class="upgrade-feature">
+                    <div class="feature-icon">🎁</div>
+                    <div class="feature-text">Эксклюзивные кейсы</div>
+                </div>
+                <div class="upgrade-feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">Приоритетная поддержка</div>
+                </div>
+            </div>
+            
+            <button class="upgrade-button" id="premium-button">ПОЛУЧИТЬ PREMIUM</button>
+        </div>
+    </div>
+
+    <!-- Рейтинг -->
+    <div class="app" id="page-rate" style="display:none;">
+        <div class="leaderboard-header">
+            <h2>Рейтинг игроков</h2>
+            <div class="subtitle">Топ 10 лучших открывателей</div>
+        </div>
+        
+        <div class="leaderboard-tabs">
+            <div class="leaderboard-tab active" data-tab="stars">По звездам</div>
+            <div class="leaderboard-tab" data-tab="wins">По победам</div>
+            <div class="leaderboard-tab" data-tab="level">По уровню</div>
+        </div>
+        
+        <div class="leaderboard-list" id="leaderboard-list"></div>
+    </div>
+
+    <!-- Профиль -->
+    <div class="app" id="page-profile" style="display:none;">
+        <div class="profile-header">
+            <img class="profile-avatar" id="profile-avatar" src="assets/images/avatar.jpg" alt="Profile" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyNDgxY2MiLz4KPHBhdGggZD0iTTIwIDIyQzIyLjIwOTEgMjIgMjQgMjAuMjA5MSAyNCAxOEMyNCAxNS43OTA5IDIyLjIwOTEgMTQgMjAgMTRDMTcuNzkwOSAxNCAxNiAxNS43OTA5IDE2IDE4QzE2IDIwLjIwOTEgMTcuNzkwOSAyMiAyMCAyMloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNiAyNkMyNiAyOC4yMDkxIDIzLjMxMzcgMzAgMjAgMzBDMTYuNjg2MyAzMCAxNCAyOC4yMDkxIDE0IDI2QzE0IDIzLjc5MDkgMTYuNjg2MyAyMiAyMCAyMkMyMy4zMTM3IDIyIDI2IDIzLjc5MDkgMjYgMjZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K'">
+            <div class="profile-name" id="profile-name">Игрок</div>
+            <div class="profile-level">Уровень <span id="profile-level">1</span></div>
+            <div class="subtitle">Профиль игрока</div>
+        </div>
+        
+        <div class="profile-stats">
+            <div class="profile-stat-card">
+                <div class="profile-stat-value" id="profile-stars">0</div>
+                <div class="profile-stat-label">Звезды</div>
+            </div>
+            <div class="profile-stat-card">
+                <div class="profile-stat-value" id="profile-opened">0</div>
+                <div class="profile-stat-label">Кейсов открыто</div>
+            </div>
+            <div class="profile-stat-card">
+                <div class="profile-stat-value" id="profile-spent">0★</div>
+                <div class="profile-stat-label">Звезд потрачено</div>
+            </div>
+            <div class="profile-stat-card">
+                <div class="profile-stat-value" id="profile-luck">0%</div>
+                <div class="profile-stat-label">Удача</div>
+            </div>
+        </div>
+        
+        <div class="profile-achievements">
+            <div class="achievements-title">Достижения</div>
+            <div class="achievements-grid" id="achievements-grid"></div>
+        </div>
+    </div>
+
+    <!-- История -->
+    <div class="app" id="page-history" style="display:none;">
+        <div class="history-header">
+            <h2>История открытий</h2>
+            <div class="subtitle">Все ваши открытия кейсов</div>
+        </div>
+        
+        <div class="history-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-opened">0</div>
+                <div class="stat-label">Всего открыто</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-spent">0★</div>
+                <div class="stat-label">Звезд потрачено</div>
+            </div>
+        </div>
+        
+        <div class="history-list" id="history-list"></div>
+    </div>
+
+    <!-- Модалки кейсов -->
+    <div class="case-fullscreen" id="case-fullscreen" style="display:none;">
+        <div class="case-header">
+            <div class="case-title" id="case-title">Case Name</div>
+            <button class="case-close" id="case-close">×</button>
+        </div>
+        <div class="case-content">
+            <div class="case-image">
+                <img src="assets/images/case-default.jpg" alt="Case Image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMTIiIGZpbGw9IiMyNDgxY2MiLz4KPHN2ZyB4PSIzMCIgeT0iMzAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTE5LjUgMTIuOTVIMTMuODVWMTkuNUgxMC4xNVYxMi45NUg0LjVWOS42NUgxMC4xNVYzSDEzLjg1VjkuNjVIMTkuNVYxMi45NVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+            </div>
+            <div class="case-price">★ <span id="case-price-value">100</span></div>
+            <button class="case-open-btn" id="case-open-btn">OPEN</button>
+            
+            <div class="prizes-section">
+                <div class="section-title">Лучшие призы</div>
+                <div class="prizes-grid" id="prizes-grid"></div>
+                
+                <div class="section-title">Все призы</div>
+                <div class="prizes-grid" id="all-prizes-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="case-opening-animation" id="case-opening-animation" style="display:none;">
+        <div class="opening-case">
+            <img src="assets/images/case-default.jpg" alt="Case" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMTIiIGZpbGw9IiMyNDgxY2MiLz4KPHN2ZyB4PSIzMCIgeT0iMzAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTE5LjUgMTIuOTVIMTMuODVWMTkuNUgxMC4xNVYxMi45NUg0LjVWOS42NUgMTAuMTVWM0gxMy44NVY5LjY1SDE5LjVWMTIuOTVaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+'">
+        </div>
+        <div class="countdown" id="countdown">3</div>
+        <div class="opening-text">Открываем кейс...</div>
+        <button class="quick-opening" id="quick-opening">Пропустить анимацию</button>
+    </div>
+
+    <div class="prize-reveal" id="prize-reveal" style="display:none;">
+        <div class="reveal-prize">
+            <div class="reveal-prize-icon" id="reveal-prize-icon">🎁</div>
+        </div>
+        <div class="reveal-text">ПОЗДРАВЛЯЕМ!</div>
+        <div class="reveal-name" id="reveal-name">Вы выиграли приз!</div>
+        <button class="reveal-continue" id="reveal-continue">Продолжить</button>
+    </div>
+
+    <!-- Навигация -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="page-main">
+            <div class="nav-icon">🏠</div>
+            <div>Главная</div>
+        </div>
+        <div class="nav-item" data-page="page-upgrade">
+            <div class="nav-icon">⭐</div>
+            <div>Премиум</div>
+        </div>
+        <div class="nav-item" data-page="page-rate">
+            <div class="nav-icon">🏆</div>
+            <div>Рейтинг</div>
+        </div>
+        <div class="nav-item" data-page="page-profile">
+            <div class="nav-icon">👤</div>
+            <div>Профиль</div>
+        </div>
+        <div class="nav-item" data-page="page-history">
+            <div class="nav-icon">📊</div>
+            <div>История</div>
+        </div>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script src="js/cases.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // Telegram Mini App инициализация
+        let tg = window.Telegram.WebApp;
+        
+        // Инициализация Telegram Web App
+        tg.expand();
+        tg.enableClosingConfirmation();
+        tg.BackButton.onClick(() => {
+            navigateToPage('page-main');
+            tg.BackButton.hide();
+        });
+        
+        // Получение данных пользователя
+        const user = tg.initDataUnsafe?.user;
+        
+        // Обновление профиля с данными из Telegram
+        function updateTelegramUserData() {
+            if (user) {
+                document.getElementById('username').textContent = user.first_name || 'Игрок';
+                document.getElementById('profile-name').textContent = user.first_name || 'Игрок';
+                
+                if (user.photo_url) {
+                    document.getElementById('avatar').src = user.photo_url;
+                    document.getElementById('profile-avatar').src = user.photo_url;
+                }
+                
+                if (user.username) {
+                    document.getElementById('username').textContent += ` (@${user.username})`;
+                }
+            }
+        }
+        
+        // Навигация между страницами
+        function navigateToPage(pageId) {
+            document.querySelectorAll('.app').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+            
+            // Показываем кнопку назад только не на главной странице
+            if (pageId !== 'page-main') {
+                document.getElementById('tg-back-button').style.display = 'block';
+                tg.BackButton.show();
+            } else {
+                document.getElementById('tg-back-button').style.display = 'none';
+                tg.BackButton.hide();
+            }
+            
+            // Обновляем активную навигацию
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Обработка навигации
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const pageId = item.getAttribute('data-page');
+                navigateToPage(pageId);
+            });
+        });
+        
+        // Обработка кнопки назад
+        document.getElementById('tg-back-button').addEventListener('click', () => {
+            navigateToPage('page-main');
+        });
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTelegramUserData();
+            navigateToPage('page-main');
+            
+            // Отправка данных в Telegram при необходимости
+            tg.ready();
+        });
+        
+        // Функция для покупки премиума
+        document.getElementById('premium-button')?.addEventListener('click', function() {
+            tg.showPopup({
+                title: 'Премиум доступ',
+                message: 'Хотите приобрести премиум доступ?',
+                buttons: [
+                    {id: 'buy', type: 'default', text: 'Купить за 299₽'},
+                    {type: 'cancel', text: 'Отмена'}
+                ]
+            }, function(buttonId) {
+                if (buttonId === 'buy') {
+                    tg.showAlert('Покупка успешно завершена!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

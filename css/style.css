@@ -1,0 +1,431 @@
+/* ===== STYLE.CSS ДЛЯ TELEGRAM MINI APP ===== */
+
+/* Базовые цвета для темной темы Telegram */
+:root {
+    /* Основные цвета темной темы */
+    --tg-dark-bg: #1a1a1a;
+    --tg-dark-panel: #2d2d2d;
+    --tg-dark-card: #3d3d3d;
+    --tg-dark-text: #ffffff;
+    --tg-dark-hint: #888888;
+    --tg-dark-border: #404040;
+    --tg-accent: #2481cc;
+    --tg-accent-text: #ffffff;
+    
+    /* Цвета для редкости предметов */
+    --tg-rare: #ff4757;
+    --tg-epic: #9c88ff;
+    --tg-legendary: #fbc531;
+    --tg-success: #44bd32;
+    --tg-gold: #ffd700;
+    --tg-silver: #c0c0c0;
+    --tg-bronze: #cd7f32;
+    
+    /* Градиенты */
+    --tg-main-gradient: linear-gradient(135deg, #2481cc, #1a6fb3);
+    --tg-danger-gradient: linear-gradient(135deg, #ff4757, #ff3838);
+    --tg-success-gradient: linear-gradient(135deg, #44bd32, #2ecc71);
+    --tg-premium-gradient: linear-gradient(135deg, #fbc531, #e1b12c);
+    
+    /* Размеры и отступы */
+    --tg-round: 16px;
+    --tg-padding: 16px;
+    
+    /* Совместимость с оригинальными переменными */
+    --bg: var(--tg-dark-bg);
+    --panel: var(--tg-dark-panel);
+    --card: var(--tg-dark-card);
+    --muted: var(--tg-dark-hint);
+    --accent: var(--tg-accent);
+    --accent-glow: rgba(36, 129, 204, 0.3);
+    --round: var(--tg-round);
+    --padding: var(--tg-padding);
+    --text: var(--tg-dark-text);
+    --rare: var(--tg-rare);
+    --epic: var(--tg-epic);
+    --legendary: var(--tg-legendary);
+    --success: var(--tg-success);
+    --gold: var(--tg-gold);
+    --silver: var(--tg-silver);
+    --bronze: var(--tg-bronze);
+    --main-gradient: var(--tg-main-gradient);
+    --danger-gradient: var(--tg-danger-gradient);
+    --success-gradient: var(--tg-success-gradient);
+    --premium-gradient: var(--tg-premium-gradient);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    height: 100%;
+    background: var(--tg-dark-bg);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--tg-dark-bg);
+    color: var(--tg-dark-text);
+    overflow-x: hidden;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Основной контейнер приложения */
+.app {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+    position: relative;
+    background: var(--tg-dark-bg);
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--tg-dark-text);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h2 {
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.subtitle {
+    color: var(--tg-dark-hint);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Кнопка назад для Telegram */
+.tg-back-button {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    background: var(--tg-accent);
+    color: var(--tg-accent-text);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.tg-back-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tg-back-button:active {
+    transform: scale(0.95);
+}
+
+/* Общие стили для кнопок */
+button {
+    font-family: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--tg-dark-bg);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--tg-dark-border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--tg-accent);
+}
+
+/* Утилитарные классы */
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: var(--tg-dark-hint);
+}
+
+.text-accent {
+    color: var(--tg-accent);
+}
+
+.text-success {
+    color: var(--tg-success);
+}
+
+.text-warning {
+    color: var(--tg-legendary);
+}
+
+.text-danger {
+    color: var(--tg-rare);
+}
+
+.bg-panel {
+    background: var(--tg-dark-panel);
+}
+
+.bg-card {
+    background: var(--tg-dark-card);
+}
+
+.border {
+    border: 1px solid var(--tg-dark-border);
+}
+
+.rounded {
+    border-radius: var(--tg-round);
+}
+
+.shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Анимации для плавных переходов */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Светлая тема для Telegram */
+@media (prefers-color-scheme: light) {
+    :root {
+        --tg-dark-bg: #ffffff;
+        --tg-dark-panel: #f8f9fa;
+        --tg-dark-card: #ffffff;
+        --tg-dark-text: #000000;
+        --tg-dark-hint: #6c757d;
+        --tg-dark-border: #dee2e6;
+        --tg-accent: #007bff;
+        --tg-accent-text: #ffffff;
+    }
+    
+    body {
+        background: var(--tg-dark-bg);
+        color: var(--tg-dark-text);
+    }
+    
+    .app {
+        background: var(--tg-dark-bg);
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: var(--tg-dark-panel);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--tg-dark-border);
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    :root {
+        --tg-padding: 12px;
+        --tg-round: 12px;
+    }
+    
+    .app {
+        padding-bottom: 70px;
+    }
+    
+    h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+    
+    .subtitle {
+        font-size: 13px;
+    }
+    
+    .tg-back-button {
+        top: 8px;
+        left: 8px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 360px) {
+    :root {
+        --tg-padding: 10px;
+        --tg-round: 10px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
+    
+    .subtitle {
+        font-size: 12px;
+    }
+}
+
+/* Поддержка очень высоких экранов */
+@media (min-height: 800px) {
+    .app {
+        padding-bottom: 90px;
+    }
+}
+
+/* Улучшенная поддержка темной темы */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tg-dark-bg: #0f1419;
+        --tg-dark-panel: #1a2229;
+        --tg-dark-card: #212a32;
+        --tg-dark-text: #e6eef2;
+        --tg-dark-hint: #8a9ba8;
+        --tg-dark-border: #2a3a48;
+    }
+}
+
+/* Стили для состояний загрузки */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Стили для выделения текста */
+::selection {
+    background: var(--tg-accent);
+    color: var(--tg-accent-text);
+}
+
+::-moz-selection {
+    background: var(--tg-accent);
+    color: var(--tg-accent-text);
+}
+
+/* Улучшенная доступность для фокуса */
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--tg-accent);
+    outline-offset: 2px;
+}
+
+/* Оптимизация для производительности */
+.will-change {
+    will-change: transform;
+}
+
+/* Хелперы для flexbox */
+.flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-around {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/* Скрытие элементов для скринридеров */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
